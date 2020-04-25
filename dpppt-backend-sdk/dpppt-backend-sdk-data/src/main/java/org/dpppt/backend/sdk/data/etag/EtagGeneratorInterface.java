@@ -4,8 +4,8 @@
  * Copyright (c) 2020. All rights reserved.
  */
 
-package org.dpppt.backend.sdk.data;
+package org.dpppt.backend.sdk.data.etag;
 
 public interface EtagGeneratorInterface {
-    public String getEtag(int primaryKey);
+    String getEtag(int primaryKey);
 }

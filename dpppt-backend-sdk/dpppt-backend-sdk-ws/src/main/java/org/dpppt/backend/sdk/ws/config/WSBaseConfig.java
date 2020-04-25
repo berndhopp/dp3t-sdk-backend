@@ -12,8 +12,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.dpppt.backend.sdk.data.DPPPTDataService;
-import org.dpppt.backend.sdk.data.EtagGenerator;
-import org.dpppt.backend.sdk.data.EtagGeneratorInterface;
+import org.dpppt.backend.sdk.data.etag.EtagGeneratorInterface;
 import org.dpppt.backend.sdk.data.JDBCDPPPTDataServiceImpl;
 import org.dpppt.backend.sdk.ws.controller.DPPPTController;
 import org.dpppt.backend.sdk.ws.filter.ResponseWrapperFilter;
@@ -25,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -44,6 +44,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Configuration
 @EnableScheduling
+@ComponentScan("org.dpppt.backend.sdk.data.etag")
 public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfigurer {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -75,12 +76,12 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	final SignatureAlgorithm algorithm = SignatureAlgorithm.ES256;
 
 	@Bean
-	public DPPPTController dppptSDKController() {
+	public DPPPTController dppptSDKController(EtagGeneratorInterface etagGenerator) {
 		ValidateRequest theValidator = requestValidator;
 		if (theValidator == null) {
 			theValidator = new NoValidateRequest();
 		}
-		return new DPPPTController(dppptSDKDataService(), etagGenerator(), appSource, exposedListCacheControl,
+		return new DPPPTController(dppptSDKDataService(), etagGenerator, appSource, exposedListCacheControl,
 				theValidator, batchLength);
 	}
 
@@ -101,11 +102,6 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
 		converters.add(new ProtobufHttpMessageConverter());
 		WebMvcConfigurer.super.extendMessageConverters(converters);
-	}
-
-	@Bean
-	public EtagGeneratorInterface etagGenerator() {
-		return new EtagGenerator();
 	}
 
 	@Bean

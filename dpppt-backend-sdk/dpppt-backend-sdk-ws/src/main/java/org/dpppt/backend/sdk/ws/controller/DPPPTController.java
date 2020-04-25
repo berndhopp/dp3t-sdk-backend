@@ -16,7 +16,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.dpppt.backend.sdk.data.DPPPTDataService;
-import org.dpppt.backend.sdk.data.EtagGeneratorInterface;
+import org.dpppt.backend.sdk.data.etag.EtagGeneratorInterface;
 import org.dpppt.backend.sdk.model.ExposedOverview;
 import org.dpppt.backend.sdk.model.Exposee;
 import org.dpppt.backend.sdk.model.ExposeeRequest;
@@ -71,7 +71,7 @@ public class DPPPTController {
 	private static final Logger logger = LoggerFactory.getLogger(DPPPTController.class);
 
 	public DPPPTController(DPPPTDataService dataService, EtagGeneratorInterface etagGenerator, String appSource,
-			int exposedListCacheControl, ValidateRequest validateRequest, long batchLength) {
+						   int exposedListCacheControl, ValidateRequest validateRequest, long batchLength) {
 		this.dataService = dataService;
 		this.appSource = appSource;
 		this.etagGenerator = etagGenerator;
